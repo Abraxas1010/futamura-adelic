@@ -172,18 +172,19 @@
       transition: stroke-width 0.15s, filter 0.15s;
     }
     .node-text {
-      font-size: 11px;
+      font-size: 12px;
       fill: #fff;
       pointer-events: none;
+      font-weight: 500;
     }
     .edge {
-      stroke: rgba(255,255,255,0.3);
-      stroke-width: 2;
+      stroke: rgba(255,255,255,0.5);
+      stroke-width: 2.5;
       fill: none;
     }
     .edge-label {
-      font-size: 9px;
-      fill: rgba(255,255,255,0.5);
+      font-size: 10px;
+      fill: rgba(255,255,255,0.7);
     }
     .legend {
       position: absolute;
@@ -237,8 +238,8 @@
         <div class="graph-container" id="graphContainer">
           <svg class="graph-svg" id="graphSvg">
             <defs>
-              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.3)"/>
+              <marker id="arrowhead" markerWidth="12" markerHeight="10" refX="6" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+                <polygon points="0 0, 12 5, 0 10" fill="rgba(255,255,255,0.6)"/>
               </marker>
             </defs>
           </svg>
@@ -336,18 +337,19 @@
       // Clear existing
       svg.innerHTML = `
         <defs>
-          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.3)"/>
+          <marker id="arrowhead" markerWidth="12" markerHeight="10" refX="6" refY="5" orient="auto" markerUnits="userSpaceOnUse">
+            <polygon points="0 0, 12 5, 0 10" fill="rgba(255,255,255,0.6)"/>
           </marker>
         </defs>
       `;
 
-      const nodeWidth = 280;
-      const nodeHeight = 44;
-      const horizontalGap = 60;
-      const verticalGap = 24;
-      const startX = 40;
-      const startY = 40;
+      const nodeWidth = 320;
+      const nodeHeight = 48;
+      const horizontalGap = 80;
+      const verticalGap = 60;  // More vertical space for visible arrows
+      const startX = 60;
+      const startY = 50;
+      const arrowPadding = 14;  // Stop edge before hitting node
 
       // Calculate positions - vertical layout by depth
       const depthCounts = {};
@@ -368,7 +370,7 @@
         nodePositions[n.id] = { x, y, node: n };
       });
 
-      // Draw edges first
+      // Draw edges first (behind nodes)
       thm.edges.forEach(e => {
         const from = nodePositions[e.from];
         const to = nodePositions[e.to];
@@ -376,22 +378,22 @@
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
-        // Vertical connection
-        const startX = from.x + nodeWidth / 2;
-        const startY = from.y + nodeHeight;
-        const endX = to.x + nodeWidth / 2;
-        const endY = to.y;
+        // Edge from bottom of source to top of target, with padding for arrow visibility
+        const edgeStartX = from.x + nodeWidth / 2;
+        const edgeStartY = from.y + nodeHeight + 4;  // Start just below node
+        const edgeEndX = to.x + nodeWidth / 2;
+        const edgeEndY = to.y - arrowPadding;  // Stop before node to show arrow
 
-        const midY = (startY + endY) / 2;
+        const midY = (edgeStartY + edgeEndY) / 2;
 
-        path.setAttribute('d', `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
+        path.setAttribute('d', `M ${edgeStartX} ${edgeStartY} C ${edgeStartX} ${midY}, ${edgeEndX} ${midY}, ${edgeEndX} ${edgeEndY}`);
         path.setAttribute('class', 'edge');
         path.setAttribute('marker-end', 'url(#arrowhead)');
         svg.appendChild(path);
 
         if (e.label) {
           const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          text.setAttribute('x', (startX + endX) / 2 + 8);
+          text.setAttribute('x', (edgeStartX + edgeEndX) / 2 + 10);
           text.setAttribute('y', midY);
           text.setAttribute('class', 'edge-label');
           text.textContent = e.label;
@@ -410,19 +412,19 @@
         rect.setAttribute('width', nodeWidth);
         rect.setAttribute('height', nodeHeight);
         rect.setAttribute('class', 'node-rect');
-        rect.setAttribute('rx', 6);
-        rect.setAttribute('ry', 6);
+        rect.setAttribute('rx', 8);
+        rect.setAttribute('ry', 8);
         rect.setAttribute('fill', nodeColors[n.type] || '#374151');
         rect.setAttribute('stroke', nodeColors[n.type] || '#374151');
         rect.setAttribute('stroke-width', '2');
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', 12);
-        text.setAttribute('y', nodeHeight / 2 + 4);
+        text.setAttribute('x', 14);
+        text.setAttribute('y', nodeHeight / 2 + 5);
         text.setAttribute('class', 'node-text');
 
-        // Truncate long labels
-        const maxLen = 38;
+        // Truncate long labels - wider nodes can fit more
+        const maxLen = 44;
         const label = n.label.length > maxLen ? n.label.substring(0, maxLen) + '...' : n.label;
         text.textContent = label;
 
@@ -435,11 +437,11 @@
         svg.appendChild(g);
       });
 
-      // Adjust SVG size
-      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 60;
-      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 60;
-      svg.setAttribute('width', Math.max(maxX, 600));
-      svg.setAttribute('height', Math.max(maxY, 400));
+      // Adjust SVG size to fill available space
+      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 80;
+      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 80;
+      svg.setAttribute('width', Math.max(maxX, 800));
+      svg.setAttribute('height', Math.max(maxY, 500));
     }
 
     // Select first theorem by default
