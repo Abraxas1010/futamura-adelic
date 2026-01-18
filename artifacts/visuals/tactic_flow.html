@@ -7,161 +7,213 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       background: #000;
-      color: #fff;
+      color: #fafafa;
       min-height: 100vh;
     }
     .header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      padding: 20px;
-      border-bottom: 1px solid #1d4ed8;
+      background: #0a0a0a;
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .header h1 {
       font-size: 1.5rem;
       color: #60a5fa;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .header p {
       color: #9ca3af;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
     }
     .container {
       display: flex;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 85px);
     }
     .sidebar {
-      width: 300px;
-      background: #111827;
-      border-right: 1px solid #374151;
+      width: 260px;
+      background: #0a0a0a;
+      border-right: 1px solid rgba(255,255,255,0.1);
       overflow-y: auto;
+      flex-shrink: 0;
     }
     .theorem-item {
-      padding: 15px;
-      border-bottom: 1px solid #374151;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s;
     }
     .theorem-item:hover {
-      background: #1f2937;
+      background: rgba(255,255,255,0.05);
     }
     .theorem-item.active {
       background: #1d4ed8;
     }
     .theorem-item h3 {
       color: #60a5fa;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
+      font-size: 0.85rem;
+      margin-bottom: 3px;
+    }
+    .theorem-item.active h3 {
+      color: #fff;
     }
     .theorem-item p {
-      color: #9ca3af;
-      font-size: 0.75rem;
+      color: #6b7280;
+      font-size: 0.7rem;
+    }
+    .theorem-item.active p {
+      color: rgba(255,255,255,0.7);
     }
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .info-bar {
-      background: #111827;
-      padding: 15px 20px;
-      border-bottom: 1px solid #374151;
+      background: #0a0a0a;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .info-bar h2 {
       color: #f59e0b;
       font-size: 1rem;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
+    }
+    .info-bar .desc {
+      color: #9ca3af;
+      font-size: 0.8rem;
     }
     .info-bar .statement {
-      color: #a5b4fc;
-      font-size: 0.8rem;
-      font-family: 'SF Mono', monospace;
+      color: #93c5fd;
+      font-size: 0.75rem;
       background: #1f2937;
-      padding: 8px 12px;
-      border-radius: 4px;
-      margin-top: 8px;
+      padding: 10px 14px;
+      border-radius: 6px;
+      margin-top: 10px;
       overflow-x: auto;
+      border-left: 3px solid #3b82f6;
+    }
+    .content-area {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
     }
     .graph-container {
       flex: 1;
       position: relative;
       overflow: auto;
-      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #000 100%);
+      background: #000;
     }
     .graph-svg {
-      min-width: 100%;
-      min-height: 100%;
+      display: block;
+    }
+    .detail-panel {
+      width: 320px;
+      background: #0a0a0a;
+      border-left: 1px solid rgba(255,255,255,0.1);
+      padding: 20px;
+      overflow-y: auto;
+      display: none;
+    }
+    .detail-panel.visible {
+      display: block;
+    }
+    .detail-panel h3 {
+      color: #60a5fa;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    .detail-panel .type-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+    .detail-panel .code-block {
+      background: #1f2937;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #93c5fd;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.5;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .detail-panel .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .detail-panel .close-btn:hover {
+      color: #fff;
     }
     .node {
       cursor: pointer;
-      transition: transform 0.2s;
     }
-    .node:hover {
-      transform: scale(1.05);
+    .node:hover .node-rect {
+      stroke-width: 3;
+      filter: brightness(1.2);
+    }
+    .node.selected .node-rect {
+      stroke: #fff;
+      stroke-width: 3;
     }
     .node-rect {
-      rx: 8;
-      ry: 8;
-      stroke-width: 2;
+      transition: stroke-width 0.15s, filter 0.15s;
     }
     .node-text {
       font-size: 11px;
       fill: #fff;
-      font-family: 'SF Mono', monospace;
+      pointer-events: none;
     }
     .edge {
-      stroke: #4b5563;
+      stroke: rgba(255,255,255,0.3);
       stroke-width: 2;
       fill: none;
-      marker-end: url(#arrowhead);
     }
     .edge-label {
-      font-size: 10px;
-      fill: #9ca3af;
+      font-size: 9px;
+      fill: rgba(255,255,255,0.5);
     }
     .legend {
       position: absolute;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(17, 24, 39, 0.95);
-      padding: 15px;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(10,10,10,0.95);
+      padding: 14px;
       border-radius: 8px;
-      border: 1px solid #374151;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .legend h4 {
       color: #60a5fa;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .legend-item {
       display: flex;
       align-items: center;
       margin-bottom: 6px;
       font-size: 0.7rem;
+      color: #9ca3af;
     }
     .legend-color {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      margin-right: 8px;
-    }
-    .tooltip {
-      position: absolute;
-      background: rgba(17, 24, 39, 0.98);
-      border: 1px solid #60a5fa;
-      border-radius: 6px;
-      padding: 12px;
-      max-width: 400px;
-      font-size: 0.75rem;
-      pointer-events: none;
-      z-index: 1000;
-      display: none;
-    }
-    .tooltip code {
-      background: #1f2937;
-      padding: 2px 6px;
+      width: 14px;
+      height: 14px;
       border-radius: 3px;
-      color: #a5b4fc;
+      margin-right: 8px;
+      flex-shrink: 0;
     }
   </style>
 </head>
@@ -177,42 +229,59 @@
     <div class="main">
       <div class="info-bar" id="infoBar">
         <h2 id="theoremName">Select a theorem</h2>
-        <p id="theoremDesc"></p>
+        <p class="desc" id="theoremDesc"></p>
         <div class="statement" id="theoremStatement" style="display: none;"></div>
       </div>
 
-      <div class="graph-container" id="graphContainer">
-        <svg class="graph-svg" id="graphSvg">
-          <defs>
-            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-              <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563"/>
-            </marker>
-          </defs>
-        </svg>
-      </div>
+      <div class="content-area">
+        <div class="graph-container" id="graphContainer">
+          <svg class="graph-svg" id="graphSvg">
+            <defs>
+              <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.3)"/>
+              </marker>
+            </defs>
+          </svg>
 
-      <div class="legend">
-        <h4>Node Types</h4>
-        <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Goal</div>
-        <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div> Hypothesis</div>
-        <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Tactic</div>
-        <div class="legend-item"><div class="legend-color" style="background: #8b5cf6;"></div> Simp Trace</div>
-        <div class="legend-item"><div class="legend-color" style="background: #06b6d4;"></div> Calc Step</div>
-        <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div> QED</div>
+          <div class="legend">
+            <h4>Node Types</h4>
+            <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Goal</div>
+            <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div> Hypothesis</div>
+            <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Tactic</div>
+            <div class="legend-item"><div class="legend-color" style="background: #8b5cf6;"></div> Simp Trace</div>
+            <div class="legend-item"><div class="legend-color" style="background: #06b6d4;"></div> Calc Step</div>
+            <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div> QED</div>
+          </div>
+        </div>
+
+        <div class="detail-panel" id="detailPanel">
+          <button class="close-btn" onclick="closeDetail()">&times;</button>
+          <h3 id="detailTitle">Node Details</h3>
+          <div class="type-badge" id="detailBadge">TYPE</div>
+          <div class="code-block" id="detailCode"></div>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="tooltip" id="tooltip"></div>
 
   <script src="tactic_flow_data.js"></script>
   <script>
     const svg = document.getElementById('graphSvg');
     const theoremList = document.getElementById('theoremList');
-    const infoBar = document.getElementById('infoBar');
-    const tooltip = document.getElementById('tooltip');
+    const detailPanel = document.getElementById('detailPanel');
 
     let currentTheorem = null;
+    let selectedNode = null;
+
+    // Brand colors matching Apoth3osis guidelines
+    const nodeColors = {
+      goal: '#3b82f6',        // blue-500
+      hypothesis: '#10b981',  // emerald-500
+      tactic: '#f59e0b',      // amber-500
+      simp_trace: '#8b5cf6',  // violet-500
+      calc_step: '#06b6d4',   // cyan-500
+      qed: '#10b981'          // emerald-500
+    };
 
     // Populate theorem list
     tacticFlowData.theorems.forEach((thm, idx) => {
@@ -230,6 +299,7 @@
       document.querySelectorAll('.theorem-item').forEach(el => el.classList.remove('active'));
       element.classList.add('active');
       currentTheorem = thm;
+      closeDetail();
 
       document.getElementById('theoremName').textContent = thm.name;
       document.getElementById('theoremDesc').textContent = thm.description;
@@ -239,23 +309,47 @@
       renderGraph(thm);
     }
 
+    function selectNode(nodeData, nodeElement) {
+      // Deselect previous
+      document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+
+      // Select new
+      nodeElement.classList.add('selected');
+      selectedNode = nodeData;
+
+      // Show detail panel
+      document.getElementById('detailTitle').textContent = nodeData.type.charAt(0).toUpperCase() + nodeData.type.slice(1);
+      const badge = document.getElementById('detailBadge');
+      badge.textContent = nodeData.type.toUpperCase();
+      badge.style.background = nodeColors[nodeData.type] || '#374151';
+      document.getElementById('detailCode').textContent = nodeData.label;
+      detailPanel.classList.add('visible');
+    }
+
+    function closeDetail() {
+      detailPanel.classList.remove('visible');
+      document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+      selectedNode = null;
+    }
+
     function renderGraph(thm) {
       // Clear existing
       svg.innerHTML = `
         <defs>
           <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-            <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563"/>
+            <polygon points="0 0, 10 3.5, 0 7" fill="rgba(255,255,255,0.3)"/>
           </marker>
         </defs>
       `;
 
-      const nodeWidth = 320;
-      const nodeHeight = 50;
-      const levelGap = 100;
-      const startX = 50;
-      const startY = 50;
+      const nodeWidth = 280;
+      const nodeHeight = 44;
+      const horizontalGap = 60;
+      const verticalGap = 24;
+      const startX = 40;
+      const startY = 40;
 
-      // Calculate positions by depth
+      // Calculate positions - vertical layout by depth
       const depthCounts = {};
       thm.nodes.forEach(n => {
         depthCounts[n.depth] = (depthCounts[n.depth] || 0) + 1;
@@ -266,36 +360,40 @@
 
       thm.nodes.forEach(n => {
         depthIndices[n.depth] = depthIndices[n.depth] || 0;
-        const count = depthCounts[n.depth];
         const idx = depthIndices[n.depth]++;
 
-        const x = startX + n.depth * (nodeWidth * 0.4 + 50);
-        const baseY = startY + (idx - (count - 1) / 2) * (nodeHeight + 30);
+        const x = startX + idx * (nodeWidth + horizontalGap);
+        const y = startY + n.depth * (nodeHeight + verticalGap);
 
-        nodePositions[n.id] = { x, y: startY + idx * (nodeHeight + 30) };
+        nodePositions[n.id] = { x, y, node: n };
       });
 
-      // Draw edges
+      // Draw edges first
       thm.edges.forEach(e => {
         const from = nodePositions[e.from];
         const to = nodePositions[e.to];
         if (!from || !to) return;
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        const midX = (from.x + nodeWidth + to.x) / 2;
-        path.setAttribute('d', `M ${from.x + nodeWidth} ${from.y + nodeHeight/2}
-                               C ${midX} ${from.y + nodeHeight/2},
-                                 ${midX} ${to.y + nodeHeight/2},
-                                 ${to.x} ${to.y + nodeHeight/2}`);
+
+        // Vertical connection
+        const startX = from.x + nodeWidth / 2;
+        const startY = from.y + nodeHeight;
+        const endX = to.x + nodeWidth / 2;
+        const endY = to.y;
+
+        const midY = (startY + endY) / 2;
+
+        path.setAttribute('d', `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
         path.setAttribute('class', 'edge');
+        path.setAttribute('marker-end', 'url(#arrowhead)');
         svg.appendChild(path);
 
         if (e.label) {
           const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          text.setAttribute('x', midX);
-          text.setAttribute('y', (from.y + to.y) / 2 + nodeHeight/2 - 5);
+          text.setAttribute('x', (startX + endX) / 2 + 8);
+          text.setAttribute('y', midY);
           text.setAttribute('class', 'edge-label');
-          text.setAttribute('text-anchor', 'middle');
           text.textContent = e.label;
           svg.appendChild(text);
         }
@@ -312,41 +410,36 @@
         rect.setAttribute('width', nodeWidth);
         rect.setAttribute('height', nodeHeight);
         rect.setAttribute('class', 'node-rect');
-        rect.setAttribute('fill', tacticFlowData.nodeColors[n.type] || '#374151');
-        rect.setAttribute('stroke', tacticFlowData.nodeColors[n.type] || '#374151');
+        rect.setAttribute('rx', 6);
+        rect.setAttribute('ry', 6);
+        rect.setAttribute('fill', nodeColors[n.type] || '#374151');
+        rect.setAttribute('stroke', nodeColors[n.type] || '#374151');
+        rect.setAttribute('stroke-width', '2');
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-        text.setAttribute('x', 10);
-        text.setAttribute('y', nodeHeight/2 + 4);
+        text.setAttribute('x', 12);
+        text.setAttribute('y', nodeHeight / 2 + 4);
         text.setAttribute('class', 'node-text');
 
         // Truncate long labels
-        const maxLen = 42;
+        const maxLen = 38;
         const label = n.label.length > maxLen ? n.label.substring(0, maxLen) + '...' : n.label;
         text.textContent = label;
 
         g.appendChild(rect);
         g.appendChild(text);
 
-        // Tooltip on hover
-        g.onmouseenter = (e) => {
-          tooltip.innerHTML = `<strong>${n.type.toUpperCase()}</strong><br><code>${n.label}</code>`;
-          tooltip.style.display = 'block';
-          tooltip.style.left = (e.pageX + 10) + 'px';
-          tooltip.style.top = (e.pageY + 10) + 'px';
-        };
-        g.onmouseleave = () => {
-          tooltip.style.display = 'none';
-        };
+        // Click handler
+        g.onclick = () => selectNode(n, g);
 
         svg.appendChild(g);
       });
 
       // Adjust SVG size
-      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 50;
-      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 50;
-      svg.setAttribute('width', maxX);
-      svg.setAttribute('height', maxY);
+      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 60;
+      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 60;
+      svg.setAttribute('width', Math.max(maxX, 600));
+      svg.setAttribute('height', Math.max(maxY, 400));
     }
 
     // Select first theorem by default

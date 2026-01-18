@@ -7,180 +7,247 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       background: #000;
-      color: #fff;
+      color: #fafafa;
       min-height: 100vh;
     }
     .header {
-      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-      padding: 20px;
-      border-bottom: 1px solid #8b5cf6;
+      background: #0a0a0a;
+      padding: 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .header h1 {
       font-size: 1.5rem;
-      color: #a78bfa;
-      margin-bottom: 8px;
+      color: #8b5cf6;
+      margin-bottom: 6px;
     }
     .header p {
       color: #9ca3af;
-      font-size: 0.875rem;
+      font-size: 0.85rem;
     }
     .container {
       display: flex;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 85px);
     }
     .sidebar {
-      width: 280px;
-      background: #111827;
-      border-right: 1px solid #374151;
+      width: 260px;
+      background: #0a0a0a;
+      border-right: 1px solid rgba(255,255,255,0.1);
       overflow-y: auto;
+      flex-shrink: 0;
     }
     .theorem-item {
-      padding: 15px;
-      border-bottom: 1px solid #374151;
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s;
     }
     .theorem-item:hover {
-      background: #1f2937;
+      background: rgba(255,255,255,0.05);
     }
     .theorem-item.active {
       background: #6d28d9;
     }
     .theorem-item h3 {
       color: #a78bfa;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
+      font-size: 0.85rem;
+      margin-bottom: 3px;
+    }
+    .theorem-item.active h3 {
+      color: #fff;
     }
     .theorem-item p {
-      color: #9ca3af;
-      font-size: 0.75rem;
+      color: #6b7280;
+      font-size: 0.7rem;
+    }
+    .theorem-item.active p {
+      color: rgba(255,255,255,0.7);
     }
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
+      min-width: 0;
     }
     .info-bar {
-      background: #111827;
-      padding: 15px 20px;
-      border-bottom: 1px solid #374151;
+      background: #0a0a0a;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
     }
     .info-bar h2 {
       color: #a78bfa;
       font-size: 1rem;
-      margin-bottom: 5px;
+      margin-bottom: 4px;
+    }
+    .info-bar .desc {
+      color: #9ca3af;
+      font-size: 0.8rem;
     }
     .info-bar .term-structure {
       color: #c4b5fd;
-      font-size: 0.8rem;
-      font-family: 'SF Mono', monospace;
+      font-size: 0.75rem;
       background: #1f2937;
       padding: 10px 14px;
       border-radius: 6px;
       margin-top: 10px;
       border-left: 3px solid #8b5cf6;
     }
+    .content-area {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
     .graph-container {
       flex: 1;
       position: relative;
       overflow: auto;
-      background: radial-gradient(circle at 50% 50%, #0c0a1d 0%, #000 100%);
+      background: #000;
     }
     .graph-svg {
-      min-width: 100%;
-      min-height: 100%;
+      display: block;
+    }
+    .detail-panel {
+      width: 340px;
+      background: #0a0a0a;
+      border-left: 1px solid rgba(255,255,255,0.1);
+      padding: 20px;
+      overflow-y: auto;
+      display: none;
+      position: relative;
+    }
+    .detail-panel.visible {
+      display: block;
+    }
+    .detail-panel h3 {
+      color: #a78bfa;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+    }
+    .detail-panel .type-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #fff;
+    }
+    .detail-panel .code-block {
+      background: #1f2937;
+      padding: 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #93c5fd;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.6;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .detail-panel .close-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: none;
+      border: none;
+      color: #6b7280;
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 4px 8px;
+    }
+    .detail-panel .close-btn:hover {
+      color: #fff;
+    }
+    .controls {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(10,10,10,0.95);
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      display: flex;
+      gap: 6px;
+    }
+    .controls button {
+      background: #1d4ed8;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-family: inherit;
+    }
+    .controls button:hover {
+      background: #2563eb;
     }
     .node {
       cursor: pointer;
-      transition: transform 0.2s, opacity 0.2s;
     }
-    .node:hover {
-      transform: scale(1.08);
+    .node:hover .node-shape {
+      stroke-width: 3;
+      filter: brightness(1.2);
+    }
+    .node.selected .node-shape {
+      stroke: #fff;
+      stroke-width: 3;
     }
     .node-shape {
-      stroke-width: 2;
+      transition: stroke-width 0.15s, filter 0.15s;
     }
     .node-text {
       font-size: 11px;
       fill: #fff;
-      font-family: 'SF Mono', monospace;
       text-anchor: middle;
       dominant-baseline: middle;
+      pointer-events: none;
     }
     .edge {
-      stroke: #6b7280;
+      stroke: rgba(255,255,255,0.3);
       stroke-width: 1.5;
       fill: none;
-      marker-end: url(#arrowhead);
     }
     .legend {
       position: absolute;
-      bottom: 20px;
-      right: 20px;
-      background: rgba(17, 24, 39, 0.95);
-      padding: 15px;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(10,10,10,0.95);
+      padding: 14px;
       border-radius: 8px;
-      border: 1px solid #374151;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .legend h4 {
       color: #a78bfa;
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .legend-item {
       display: flex;
       align-items: center;
       margin-bottom: 6px;
       font-size: 0.7rem;
+      color: #9ca3af;
     }
     .legend-color {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
       margin-right: 8px;
+      flex-shrink: 0;
     }
-    .controls {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: rgba(17, 24, 39, 0.95);
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #374151;
+    .legend-color.ellipse {
+      border-radius: 50%;
     }
-    .controls button {
-      background: #4c1d95;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      margin: 2px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 0.75rem;
-    }
-    .controls button:hover {
-      background: #6d28d9;
-    }
-    .tooltip {
-      position: absolute;
-      background: rgba(17, 24, 39, 0.98);
-      border: 1px solid #a78bfa;
-      border-radius: 6px;
-      padding: 12px;
-      max-width: 350px;
-      font-size: 0.75rem;
-      pointer-events: none;
-      z-index: 1000;
-      display: none;
-    }
-    .tooltip .type-badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      margin-bottom: 6px;
+    .legend-color.diamond {
+      transform: rotate(45deg);
+      width: 10px;
+      height: 10px;
+      margin-left: 2px;
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -196,49 +263,69 @@
     <div class="main">
       <div class="info-bar" id="infoBar">
         <h2 id="theoremName">Select a theorem</h2>
-        <p id="theoremDesc"></p>
+        <p class="desc" id="theoremDesc"></p>
         <div class="term-structure" id="termStructure" style="display: none;"></div>
       </div>
 
-      <div class="graph-container" id="graphContainer">
-        <svg class="graph-svg" id="graphSvg">
-          <defs>
-            <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-              <polygon points="0 0, 8 3, 0 6" fill="#6b7280"/>
-            </marker>
-          </defs>
-        </svg>
+      <div class="content-area">
+        <div class="graph-container" id="graphContainer">
+          <svg class="graph-svg" id="graphSvg">
+            <defs>
+              <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                <polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.3)"/>
+              </marker>
+            </defs>
+          </svg>
 
-        <div class="controls">
-          <button onclick="zoomIn()">Zoom +</button>
-          <button onclick="zoomOut()">Zoom -</button>
-          <button onclick="resetView()">Reset</button>
+          <div class="controls">
+            <button onclick="zoomIn()">Zoom +</button>
+            <button onclick="zoomOut()">Zoom -</button>
+            <button onclick="resetView()">Reset</button>
+          </div>
+
+          <div class="legend">
+            <h4>Term Types</h4>
+            <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Application</div>
+            <div class="legend-item"><div class="legend-color diamond" style="background: #8b5cf6;"></div> Lambda</div>
+            <div class="legend-item"><div class="legend-color ellipse" style="background: #10b981;"></div> Variable</div>
+            <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Constant</div>
+            <div class="legend-item"><div class="legend-color" style="background: #06b6d4;"></div> Equality</div>
+            <div class="legend-item"><div class="legend-color" style="background: #ef4444;"></div> Constructor</div>
+          </div>
         </div>
-      </div>
 
-      <div class="legend">
-        <h4>Term Types</h4>
-        <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Application</div>
-        <div class="legend-item"><div class="legend-color" style="background: #8b5cf6;"></div> Lambda</div>
-        <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div> Variable</div>
-        <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Constant</div>
-        <div class="legend-item"><div class="legend-color" style="background: #06b6d4;"></div> Equality</div>
-        <div class="legend-item"><div class="legend-color" style="background: #ec4899;"></div> Constructor</div>
-        <div class="legend-item"><div class="legend-color" style="background: #14b8a6;"></div> Calc Block</div>
+        <div class="detail-panel" id="detailPanel">
+          <button class="close-btn" onclick="closeDetail()">&times;</button>
+          <h3 id="detailTitle">Term Details</h3>
+          <div class="type-badge" id="detailBadge">TYPE</div>
+          <div class="code-block" id="detailCode"></div>
+        </div>
       </div>
     </div>
   </div>
-
-  <div class="tooltip" id="tooltip"></div>
 
   <script src="proof_term_data.js"></script>
   <script>
     const svg = document.getElementById('graphSvg');
     const theoremList = document.getElementById('theoremList');
-    const tooltip = document.getElementById('tooltip');
+    const detailPanel = document.getElementById('detailPanel');
 
     let currentTheorem = null;
+    let selectedNode = null;
     let scale = 1;
+
+    // Brand colors matching Apoth3osis guidelines
+    const nodeColors = {
+      app: '#3b82f6',      // blue-500 - application
+      lam: '#8b5cf6',      // violet-500 - lambda
+      var: '#10b981',      // emerald-500 - variable
+      const: '#f59e0b',    // amber-500 - constant
+      eq: '#06b6d4',       // cyan-500 - equality
+      mk: '#ef4444',       // red-500 - constructor
+      calc: '#06b6d4',     // cyan-500 - calc block
+      list: '#f59e0b',     // amber-500 - list
+      unfold: '#6b7280'    // gray-500 - unfold step
+    };
 
     // Populate theorem list
     proofTermData.theorems.forEach((thm, idx) => {
@@ -256,6 +343,7 @@
       document.querySelectorAll('.theorem-item').forEach(el => el.classList.remove('active'));
       element.classList.add('active');
       currentTheorem = thm;
+      closeDetail();
 
       document.getElementById('theoremName').textContent = thm.name;
       document.getElementById('theoremDesc').textContent = thm.description;
@@ -265,65 +353,83 @@
       renderDAG(thm);
     }
 
+    function selectNode(nodeData, nodeElement) {
+      document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+      nodeElement.classList.add('selected');
+      selectedNode = nodeData;
+
+      document.getElementById('detailTitle').textContent = 'Term: ' + nodeData.type;
+      const badge = document.getElementById('detailBadge');
+      badge.textContent = nodeData.type.toUpperCase();
+      badge.style.background = nodeColors[nodeData.type] || '#374151';
+      document.getElementById('detailCode').textContent = nodeData.label;
+      detailPanel.classList.add('visible');
+    }
+
+    function closeDetail() {
+      detailPanel.classList.remove('visible');
+      document.querySelectorAll('.node.selected').forEach(n => n.classList.remove('selected'));
+      selectedNode = null;
+    }
+
     function renderDAG(thm) {
-      // Clear existing
       svg.innerHTML = `
         <defs>
           <marker id="arrowhead" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
-            <polygon points="0 0, 8 3, 0 6" fill="#6b7280"/>
+            <polygon points="0 0, 8 3, 0 6" fill="rgba(255,255,255,0.3)"/>
           </marker>
         </defs>
         <g id="graphGroup" transform="scale(${scale})"></g>
       `;
 
       const graphGroup = document.getElementById('graphGroup');
-      const nodeWidth = 140;
+      const nodeWidth = 120;
       const nodeHeight = 36;
-      const levelGapX = 180;
+      const levelGapX = 160;
       const levelGapY = 70;
-      const startX = 80;
+      const startX = 60;
       const startY = 50;
 
-      // Tree layout: calculate positions
+      // Calculate positions - tree layout
       const nodePositions = {};
       const depthCounts = {};
       const depthIndices = {};
 
-      // Count nodes at each depth
       thm.nodes.forEach(n => {
         depthCounts[n.depth] = (depthCounts[n.depth] || 0) + 1;
       });
 
-      // Position nodes in a tree layout
       thm.nodes.forEach(n => {
         depthIndices[n.depth] = depthIndices[n.depth] || 0;
         const count = depthCounts[n.depth];
         const idx = depthIndices[n.depth]++;
 
-        // Horizontal tree layout
-        const x = startX + n.depth * levelGapX;
-        const totalHeight = count * (nodeHeight + 25);
-        const startOffset = -totalHeight / 2 + nodeHeight / 2;
-        const y = 250 + startOffset + idx * (nodeHeight + 25);
+        // Center nodes at each level
+        const levelWidth = count * (nodeWidth + 40);
+        const levelStartX = startX + (idx * (nodeWidth + 40));
+
+        const x = levelStartX;
+        const y = startY + n.depth * levelGapY;
 
         nodePositions[n.id] = { x, y, node: n };
       });
 
-      // Draw edges first (so they're behind nodes)
+      // Draw edges
       thm.edges.forEach(e => {
         const from = nodePositions[e.from];
         const to = nodePositions[e.to];
         if (!from || !to) return;
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-        const startX = from.x + nodeWidth;
-        const startY = from.y + nodeHeight / 2;
-        const endX = to.x;
-        const endY = to.y + nodeHeight / 2;
-        const midX = (startX + endX) / 2;
+        const startX = from.x + nodeWidth / 2;
+        const startY = from.y + nodeHeight;
+        const endX = to.x + nodeWidth / 2;
+        const endY = to.y;
+        const midY = (startY + endY) / 2;
 
-        path.setAttribute('d', `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`);
+        path.setAttribute('d', `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
         path.setAttribute('class', 'edge');
+        path.setAttribute('marker-end', 'url(#arrowhead)');
         graphGroup.appendChild(path);
       });
 
@@ -334,10 +440,9 @@
         g.setAttribute('class', 'node');
         g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
 
-        const color = proofTermData.nodeColors[n.type] || '#374151';
-
-        // Draw shape based on type
+        const color = nodeColors[n.type] || '#374151';
         let shape;
+
         if (n.type === 'lam') {
           // Diamond for lambda
           shape = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
@@ -362,47 +467,33 @@
         shape.setAttribute('class', 'node-shape');
         shape.setAttribute('fill', color);
         shape.setAttribute('stroke', color);
+        shape.setAttribute('stroke-width', '2');
 
         const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         text.setAttribute('x', nodeWidth / 2);
         text.setAttribute('y', nodeHeight / 2);
         text.setAttribute('class', 'node-text');
 
-        // Truncate long labels
-        const maxLen = 18;
+        const maxLen = 14;
         const label = n.label.length > maxLen ? n.label.substring(0, maxLen) + '…' : n.label;
         text.textContent = label;
 
         g.appendChild(shape);
         g.appendChild(text);
-
-        // Tooltip
-        g.onmouseenter = (e) => {
-          tooltip.innerHTML = `
-            <div class="type-badge" style="background: ${color}">${n.type.toUpperCase()}</div>
-            <div style="margin-top: 6px; color: #e5e7eb;">${n.label}</div>
-          `;
-          tooltip.style.display = 'block';
-          tooltip.style.left = (e.pageX + 15) + 'px';
-          tooltip.style.top = (e.pageY + 15) + 'px';
-        };
-        g.onmouseleave = () => {
-          tooltip.style.display = 'none';
-        };
+        g.onclick = () => selectNode(n, g);
 
         graphGroup.appendChild(g);
       });
 
       // Adjust SVG size
-      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 100;
-      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 100;
-      const minY = Math.min(...Object.values(nodePositions).map(p => p.y)) - 50;
-      svg.setAttribute('width', maxX * scale);
-      svg.setAttribute('height', (maxY - minY + 100) * scale);
+      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 80;
+      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 80;
+      svg.setAttribute('width', Math.max(maxX * scale, 600));
+      svg.setAttribute('height', Math.max(maxY * scale, 400));
     }
 
     function zoomIn() {
-      scale = Math.min(scale * 1.2, 2);
+      scale = Math.min(scale * 1.2, 2.5);
       if (currentTheorem) renderDAG(currentTheorem);
     }
 
