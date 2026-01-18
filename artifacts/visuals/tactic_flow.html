@@ -372,7 +372,7 @@
         nodePositions[n.id] = { x, y, node: n };
       });
 
-      // Draw edges first (behind nodes) - orthogonal/elbow style
+      // Draw edges (orthogonal routing with proper side/bottom exits)
       thm.edges.forEach(e => {
         const from = nodePositions[e.from];
         const to = nodePositions[e.to];
@@ -380,22 +380,62 @@
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
-        // Edge endpoints
-        const startX = from.x + nodeWidth / 2;
-        const startY = from.y + nodeHeight;
-        const endX = to.x + nodeWidth / 2;
-        const endY = to.y - arrowPadding;
-
-        // Orthogonal routing: down, horizontal, up
-        const midY = (startY + endY) / 2;
+        // Determine if this is a vertical (parent→child) or horizontal (sibling) connection
+        const isHorizontal = Math.abs(from.y - to.y) < nodeHeight;
+        const toRight = to.x > from.x;
+        const toLeft = to.x < from.x;
+        const toBelow = to.y > from.y;
 
         let pathD;
-        if (Math.abs(startX - endX) < 5) {
-          // Straight vertical line
-          pathD = `M ${startX} ${startY} L ${startX} ${endY}`;
+        let labelX, labelY;
+
+        if (isHorizontal) {
+          // Horizontal connection: exit from side, go straight or with small jog
+          const startX = toRight ? from.x + nodeWidth : from.x;
+          const startY = from.y + nodeHeight / 2;
+          const endX = toRight ? to.x - arrowPadding : to.x + nodeWidth + arrowPadding;
+          const endY = to.y + nodeHeight / 2;
+
+          // Simple horizontal line with slight curve
+          const midX = (startX + endX) / 2;
+          pathD = `M ${startX} ${startY} C ${midX} ${startY}, ${midX} ${endY}, ${endX} ${endY}`;
+          labelX = midX;
+          labelY = startY - 8;
+        } else if (toBelow && Math.abs(from.x - to.x) < 5) {
+          // Straight down - simple vertical line
+          const startX = from.x + nodeWidth / 2;
+          const startY = from.y + nodeHeight;
+          const endX = to.x + nodeWidth / 2;
+          const endY = to.y - arrowPadding;
+
+          pathD = `M ${startX} ${startY} L ${endX} ${endY}`;
+          labelX = startX + 10;
+          labelY = (startY + endY) / 2;
+        } else if (toBelow) {
+          // Diagonal down: exit bottom, route around, enter top
+          const startX = from.x + nodeWidth / 2;
+          const startY = from.y + nodeHeight;
+          const endX = to.x + nodeWidth / 2;
+          const endY = to.y - arrowPadding;
+
+          // Route: down a bit, horizontal, then down to target
+          const dropY = startY + 20;  // Drop down first
+          const riseY = endY - 20;    // Rise before target
+
+          pathD = `M ${startX} ${startY} L ${startX} ${dropY} L ${endX} ${dropY} L ${endX} ${endY}`;
+          labelX = (startX + endX) / 2 + 10;
+          labelY = dropY - 5;
         } else {
-          // Elbow connector: down → horizontal → up
+          // Going up or complex routing
+          const startX = from.x + nodeWidth / 2;
+          const startY = from.y;
+          const endX = to.x + nodeWidth / 2;
+          const endY = to.y + nodeHeight + arrowPadding;
+
+          const midY = (startY + endY) / 2;
           pathD = `M ${startX} ${startY} L ${startX} ${midY} L ${endX} ${midY} L ${endX} ${endY}`;
+          labelX = (startX + endX) / 2 + 10;
+          labelY = midY - 5;
         }
 
         path.setAttribute('d', pathD);
@@ -405,8 +445,8 @@
 
         if (e.label) {
           const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          text.setAttribute('x', (startX + endX) / 2 + 10);
-          text.setAttribute('y', midY - 5);
+          text.setAttribute('x', labelX);
+          text.setAttribute('y', labelY);
           text.setAttribute('class', 'edge-label');
           text.textContent = e.label;
           svg.appendChild(text);
