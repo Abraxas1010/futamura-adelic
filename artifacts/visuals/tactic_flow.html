@@ -179,8 +179,10 @@
     }
     .edge {
       stroke: rgba(255,255,255,0.5);
-      stroke-width: 2.5;
+      stroke-width: 2;
       fill: none;
+      stroke-linejoin: round;
+      stroke-linecap: round;
     }
     .edge-label {
       font-size: 10px;
@@ -370,7 +372,7 @@
         nodePositions[n.id] = { x, y, node: n };
       });
 
-      // Draw edges first (behind nodes)
+      // Draw edges first (behind nodes) - orthogonal/elbow style
       thm.edges.forEach(e => {
         const from = nodePositions[e.from];
         const to = nodePositions[e.to];
@@ -378,23 +380,33 @@
 
         const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
 
-        // Edge from bottom of source to top of target, with padding for arrow visibility
-        const edgeStartX = from.x + nodeWidth / 2;
-        const edgeStartY = from.y + nodeHeight + 4;  // Start just below node
-        const edgeEndX = to.x + nodeWidth / 2;
-        const edgeEndY = to.y - arrowPadding;  // Stop before node to show arrow
+        // Edge endpoints
+        const startX = from.x + nodeWidth / 2;
+        const startY = from.y + nodeHeight;
+        const endX = to.x + nodeWidth / 2;
+        const endY = to.y - arrowPadding;
 
-        const midY = (edgeStartY + edgeEndY) / 2;
+        // Orthogonal routing: down, horizontal, up
+        const midY = (startY + endY) / 2;
 
-        path.setAttribute('d', `M ${edgeStartX} ${edgeStartY} C ${edgeStartX} ${midY}, ${edgeEndX} ${midY}, ${edgeEndX} ${edgeEndY}`);
+        let pathD;
+        if (Math.abs(startX - endX) < 5) {
+          // Straight vertical line
+          pathD = `M ${startX} ${startY} L ${startX} ${endY}`;
+        } else {
+          // Elbow connector: down → horizontal → up
+          pathD = `M ${startX} ${startY} L ${startX} ${midY} L ${endX} ${midY} L ${endX} ${endY}`;
+        }
+
+        path.setAttribute('d', pathD);
         path.setAttribute('class', 'edge');
         path.setAttribute('marker-end', 'url(#arrowhead)');
         svg.appendChild(path);
 
         if (e.label) {
           const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          text.setAttribute('x', (edgeStartX + edgeEndX) / 2 + 10);
-          text.setAttribute('y', midY);
+          text.setAttribute('x', (startX + endX) / 2 + 10);
+          text.setAttribute('y', midY - 5);
           text.setAttribute('class', 'edge-label');
           text.textContent = e.label;
           svg.appendChild(text);
