@@ -55,6 +55,24 @@ We humbly thank the collective intelligence of humanity for providing the techno
 <a href="https://abraxas1010.github.io/futamura-adelic/artifacts/visuals/futamura_adelic_3d.html">▶ Open Interactive 3D Map</a>
 </td>
 </tr>
+<tr>
+<td align="center" width="50%">
+<strong>Tactic Flow Graph</strong><br/>
+<em>Proof tactics and goal transformations</em><br/>
+<a href="https://abraxas1010.github.io/futamura-adelic/artifacts/visuals/tactic_flow.html">
+  <img src="artifacts/visuals/tactic_flow_preview.svg" alt="Tactic Flow preview" width="100%"/>
+</a><br/>
+<a href="https://abraxas1010.github.io/futamura-adelic/artifacts/visuals/tactic_flow.html">▶ Open Interactive Tactic Flow</a>
+</td>
+<td align="center" width="50%">
+<strong>Proof Term DAG</strong><br/>
+<em>Abstract syntax tree of proof terms</em><br/>
+<a href="https://abraxas1010.github.io/futamura-adelic/artifacts/visuals/proof_term_dag.html">
+  <img src="artifacts/visuals/proof_term_dag_preview.svg" alt="Proof Term DAG preview" width="100%"/>
+</a><br/>
+<a href="https://abraxas1010.github.io/futamura-adelic/artifacts/visuals/proof_term_dag.html">▶ Open Interactive Proof DAG</a>
+</td>
+</tr>
 </table>
 
 ---

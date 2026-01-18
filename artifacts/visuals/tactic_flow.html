@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tactic Flow Graph - Futamura-Adelic</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+      background: #000;
+      color: #fff;
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      padding: 20px;
+      border-bottom: 1px solid #1d4ed8;
+    }
+    .header h1 {
+      font-size: 1.5rem;
+      color: #60a5fa;
+      margin-bottom: 8px;
+    }
+    .header p {
+      color: #9ca3af;
+      font-size: 0.875rem;
+    }
+    .container {
+      display: flex;
+      height: calc(100vh - 100px);
+    }
+    .sidebar {
+      width: 300px;
+      background: #111827;
+      border-right: 1px solid #374151;
+      overflow-y: auto;
+    }
+    .theorem-item {
+      padding: 15px;
+      border-bottom: 1px solid #374151;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .theorem-item:hover {
+      background: #1f2937;
+    }
+    .theorem-item.active {
+      background: #1d4ed8;
+    }
+    .theorem-item h3 {
+      color: #60a5fa;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+    }
+    .theorem-item p {
+      color: #9ca3af;
+      font-size: 0.75rem;
+    }
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .info-bar {
+      background: #111827;
+      padding: 15px 20px;
+      border-bottom: 1px solid #374151;
+    }
+    .info-bar h2 {
+      color: #f59e0b;
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+    .info-bar .statement {
+      color: #a5b4fc;
+      font-size: 0.8rem;
+      font-family: 'SF Mono', monospace;
+      background: #1f2937;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin-top: 8px;
+      overflow-x: auto;
+    }
+    .graph-container {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #000 100%);
+    }
+    .graph-svg {
+      min-width: 100%;
+      min-height: 100%;
+    }
+    .node {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .node:hover {
+      transform: scale(1.05);
+    }
+    .node-rect {
+      rx: 8;
+      ry: 8;
+      stroke-width: 2;
+    }
+    .node-text {
+      font-size: 11px;
+      fill: #fff;
+      font-family: 'SF Mono', monospace;
+    }
+    .edge {
+      stroke: #4b5563;
+      stroke-width: 2;
+      fill: none;
+      marker-end: url(#arrowhead);
+    }
+    .edge-label {
+      font-size: 10px;
+      fill: #9ca3af;
+    }
+    .legend {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(17, 24, 39, 0.95);
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+    }
+    .legend h4 {
+      color: #60a5fa;
+      font-size: 0.75rem;
+      margin-bottom: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 0.7rem;
+    }
+    .legend-color {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    .tooltip {
+      position: absolute;
+      background: rgba(17, 24, 39, 0.98);
+      border: 1px solid #60a5fa;
+      border-radius: 6px;
+      padding: 12px;
+      max-width: 400px;
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 1000;
+      display: none;
+    }
+    .tooltip code {
+      background: #1f2937;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #a5b4fc;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Tactic Flow Graph</h1>
+    <p>Interactive visualization of proof tactics and goal transformations</p>
+  </div>
+
+  <div class="container">
+    <div class="sidebar" id="theoremList"></div>
+
+    <div class="main">
+      <div class="info-bar" id="infoBar">
+        <h2 id="theoremName">Select a theorem</h2>
+        <p id="theoremDesc"></p>
+        <div class="statement" id="theoremStatement" style="display: none;"></div>
+      </div>
+
+      <div class="graph-container" id="graphContainer">
+        <svg class="graph-svg" id="graphSvg">
+          <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+              <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563"/>
+            </marker>
+          </defs>
+        </svg>
+      </div>
+
+      <div class="legend">
+        <h4>Node Types</h4>
+        <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div> Goal</div>
+        <div class="legend-item"><div class="legend-color" style="background: #22c55e;"></div> Hypothesis</div>
+        <div class="legend-item"><div class="legend-color" style="background: #f59e0b;"></div> Tactic</div>
+        <div class="legend-item"><div class="legend-color" style="background: #8b5cf6;"></div> Simp Trace</div>
+        <div class="legend-item"><div class="legend-color" style="background: #06b6d4;"></div> Calc Step</div>
+        <div class="legend-item"><div class="legend-color" style="background: #10b981;"></div> QED</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tooltip" id="tooltip"></div>
+
+  <script src="tactic_flow_data.js"></script>
+  <script>
+    const svg = document.getElementById('graphSvg');
+    const theoremList = document.getElementById('theoremList');
+    const infoBar = document.getElementById('infoBar');
+    const tooltip = document.getElementById('tooltip');
+
+    let currentTheorem = null;
+
+    // Populate theorem list
+    tacticFlowData.theorems.forEach((thm, idx) => {
+      const item = document.createElement('div');
+      item.className = 'theorem-item' + (idx === 0 ? ' active' : '');
+      item.innerHTML = `
+        <h3>${thm.name}</h3>
+        <p>${thm.file}</p>
+      `;
+      item.onclick = () => selectTheorem(thm, item);
+      theoremList.appendChild(item);
+    });
+
+    function selectTheorem(thm, element) {
+      document.querySelectorAll('.theorem-item').forEach(el => el.classList.remove('active'));
+      element.classList.add('active');
+      currentTheorem = thm;
+
+      document.getElementById('theoremName').textContent = thm.name;
+      document.getElementById('theoremDesc').textContent = thm.description;
+      document.getElementById('theoremStatement').textContent = thm.statement;
+      document.getElementById('theoremStatement').style.display = 'block';
+
+      renderGraph(thm);
+    }
+
+    function renderGraph(thm) {
+      // Clear existing
+      svg.innerHTML = `
+        <defs>
+          <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#4b5563"/>
+          </marker>
+        </defs>
+      `;
+
+      const nodeWidth = 320;
+      const nodeHeight = 50;
+      const levelGap = 100;
+      const startX = 50;
+      const startY = 50;
+
+      // Calculate positions by depth
+      const depthCounts = {};
+      thm.nodes.forEach(n => {
+        depthCounts[n.depth] = (depthCounts[n.depth] || 0) + 1;
+      });
+
+      const depthIndices = {};
+      const nodePositions = {};
+
+      thm.nodes.forEach(n => {
+        depthIndices[n.depth] = depthIndices[n.depth] || 0;
+        const count = depthCounts[n.depth];
+        const idx = depthIndices[n.depth]++;
+
+        const x = startX + n.depth * (nodeWidth * 0.4 + 50);
+        const baseY = startY + (idx - (count - 1) / 2) * (nodeHeight + 30);
+
+        nodePositions[n.id] = { x, y: startY + idx * (nodeHeight + 30) };
+      });
+
+      // Draw edges
+      thm.edges.forEach(e => {
+        const from = nodePositions[e.from];
+        const to = nodePositions[e.to];
+        if (!from || !to) return;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        const midX = (from.x + nodeWidth + to.x) / 2;
+        path.setAttribute('d', `M ${from.x + nodeWidth} ${from.y + nodeHeight/2}
+                               C ${midX} ${from.y + nodeHeight/2},
+                                 ${midX} ${to.y + nodeHeight/2},
+                                 ${to.x} ${to.y + nodeHeight/2}`);
+        path.setAttribute('class', 'edge');
+        svg.appendChild(path);
+
+        if (e.label) {
+          const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          text.setAttribute('x', midX);
+          text.setAttribute('y', (from.y + to.y) / 2 + nodeHeight/2 - 5);
+          text.setAttribute('class', 'edge-label');
+          text.setAttribute('text-anchor', 'middle');
+          text.textContent = e.label;
+          svg.appendChild(text);
+        }
+      });
+
+      // Draw nodes
+      thm.nodes.forEach(n => {
+        const pos = nodePositions[n.id];
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'node');
+        g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('width', nodeWidth);
+        rect.setAttribute('height', nodeHeight);
+        rect.setAttribute('class', 'node-rect');
+        rect.setAttribute('fill', tacticFlowData.nodeColors[n.type] || '#374151');
+        rect.setAttribute('stroke', tacticFlowData.nodeColors[n.type] || '#374151');
+
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', 10);
+        text.setAttribute('y', nodeHeight/2 + 4);
+        text.setAttribute('class', 'node-text');
+
+        // Truncate long labels
+        const maxLen = 42;
+        const label = n.label.length > maxLen ? n.label.substring(0, maxLen) + '...' : n.label;
+        text.textContent = label;
+
+        g.appendChild(rect);
+        g.appendChild(text);
+
+        // Tooltip on hover
+        g.onmouseenter = (e) => {
+          tooltip.innerHTML = `<strong>${n.type.toUpperCase()}</strong><br><code>${n.label}</code>`;
+          tooltip.style.display = 'block';
+          tooltip.style.left = (e.pageX + 10) + 'px';
+          tooltip.style.top = (e.pageY + 10) + 'px';
+        };
+        g.onmouseleave = () => {
+          tooltip.style.display = 'none';
+        };
+
+        svg.appendChild(g);
+      });
+
+      // Adjust SVG size
+      const maxX = Math.max(...Object.values(nodePositions).map(p => p.x)) + nodeWidth + 50;
+      const maxY = Math.max(...Object.values(nodePositions).map(p => p.y)) + nodeHeight + 50;
+      svg.setAttribute('width', maxX);
+      svg.setAttribute('height', maxY);
+    }
+
+    // Select first theorem by default
+    if (tacticFlowData.theorems.length > 0) {
+      selectTheorem(tacticFlowData.theorems[0], document.querySelector('.theorem-item'));
+    }
+  </script>
+</body>
+</html>
