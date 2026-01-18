@@ -1,0 +1,185 @@
+[verify_futamura_adelic] root=/home/richard/Documents/heyting-dev-laptop-canonicalizewf/WIP/Futamura_Adelic_PaperPack/RESEARCHER_BUNDLE
+
+[versions] lean
+Lean (version 4.24.0, x86_64-unknown-linux-gnu, commit 797c613eb9b6d4ec95db23e3e00af9ac6657f24b, Release)
+
+[versions] lake
+Lake version 5.0.0-src+797c613 (Lean version 4.24.0)
+
+[env] disable mathlib cache on update (for portability)
+MATHLIB_NO_CACHE_ON_UPDATE=1
+
+[git] configure URL policy
+[git] no vendor mirrors found; using network URLs
+GIT_CONFIG_GLOBAL=/home/richard/Documents/heyting-dev-laptop-canonicalizewf/WIP/Futamura_Adelic_PaperPack/RESEARCHER_BUNDLE/reports/GITCONFIG_EFFECTIVE.txt
+GIT_CONFIG_NOSYSTEM=1
+
+[gitconfig]
+# no URL rewrites
+
+[lake] update
+skipping: FUTAMURA_ADELIC_SKIP_UPDATE=1
+
+[lake] build executables (strict)
+Build completed successfully (1610 jobs).
+Build completed successfully (3642 jobs).
+Build completed successfully (2314 jobs).
+Build completed successfully (2400 jobs).
+✔ [1634/1646] Built HeytingLean.Embeddings.Adelic (3.0s)
+✔ [1635/1646] Built HeytingLean.Embeddings.Adelic:c.o (315ms)
+✔ [1636/1646] Built HeytingLean.ProgramCalculus.AdelicOps (2.7s)
+✔ [1637/1646] Built HeytingLean.ProgramCalculus.AdelicOps:c.o (122ms)
+✔ [1638/1646] Built HeytingLean.LoF.Combinators.SKYMultiway (6.2s)
+✔ [1639/1646] Built HeytingLean.LoF.Combinators.SKYMultiway:c.o (787ms)
+✔ [1640/1646] Built HeytingLean.LoF.Combinators.SKYExec (2.1s)
+✔ [1641/1646] Built HeytingLean.LoF.Combinators.SKYExec:c.o (345ms)
+✔ [1642/1646] Built HeytingLean.ProgramCalculus.AdelicOpsInstances.SKYAdelic (2.8s)
+✔ [1643/1646] Built HeytingLean.ProgramCalculus.AdelicOpsInstances.SKYAdelic:c.o (278ms)
+✔ [1644/1646] Built HeytingLean.CLI.AdelicFutamuraDemoMain (2.2s)
+✔ [1645/1646] Built HeytingLean.CLI.AdelicFutamuraDemoMain:c.o (271ms)
+✔ [1646/1646] Built adelic_futamura_demo:exe (1.2s)
+Build completed successfully (1646 jobs).
+✔ [1597/1705] Built HeytingLean.ProgramCalculus.Futamura (640ms)
+✔ [3037/3938] Built HeytingLean.ProgramCalculus.Futamura:c.o (215ms)
+✔ [3926/3938] Built HeytingLean.LoF.Combinators.Differential.VectorSpace (3.1s)
+✔ [3927/3938] Built HeytingLean.LoF.Combinators.Differential.VectorSpace:c.o (317ms)
+✔ [3928/3938] Built HeytingLean.ProgramCalculus.AdelicFutamura (3.3s)
+✔ [3929/3938] Built HeytingLean.ProgramCalculus.AdelicFutamura:c.o (157ms)
+✔ [3930/3938] Built HeytingLean.LoF.Combinators.Differential.LinearComb (3.9s)
+✔ [3931/3938] Built HeytingLean.LoF.Combinators.Differential.LinearComb:c.o (261ms)
+✔ [3932/3938] Built HeytingLean.LoF.Combinators.Differential.Derivative (3.4s)
+✔ [3933/3938] Built HeytingLean.LoF.Combinators.Differential.Derivative:c.o (283ms)
+ℹ [3934/3938] Built HeytingLean.Tests.Integration.OrganicAlignmentStack (3.6s)
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:18:0: HeytingLean.LoF.Combinators.Differential.S_derivative_correct.{u_1} {K : Type u_1} [CommSemiring K]
+  (x y z dx dy dz : HeytingLean.LoF.Combinators.Differential.FormalSum K) :
+  have base := HeytingLean.LoF.Combinators.Differential.S_denote x y z;
+  have tangent := (HeytingLean.LoF.Combinators.Differential.S_derivative x y z) (dx, dy, dz);
+  HeytingLean.LoF.Combinators.Differential.dualApp
+      (HeytingLean.LoF.Combinators.Differential.dualApp { base := x, tangent := dx } { base := z, tangent := dz })
+      (HeytingLean.LoF.Combinators.Differential.dualApp { base := y, tangent := dy } { base := z, tangent := dz }) =
+    { base := base, tangent := tangent }
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:19:0: HeytingLean.LoF.Combinators.Differential.dualApp_chainRule_consistent.{u_1} {K : Type u_1} [CommSemiring K]
+  (f g x dx : HeytingLean.LoF.Combinators.Differential.FormalSum K) :
+  (HeytingLean.LoF.Combinators.Differential.dualApp (HeytingLean.LoF.Combinators.Differential.Dual.pure f)
+        (HeytingLean.LoF.Combinators.Differential.dualApp (HeytingLean.LoF.Combinators.Differential.Dual.pure g)
+          { base := x, tangent := dx })).tangent =
+    (HeytingLean.LoF.Combinators.Differential.derivativeApp2 f ∘ₗ
+        HeytingLean.LoF.Combinators.Differential.derivativeApp2 g)
+      dx
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:20:0: HeytingLean.ProgramCalculus.AdelicOpsInstances.skyAdelicProgramOps (fuel : ℕ := 100) :
+  HeytingLean.ProgramCalculus.AdelicProgramOps (HeytingLean.ProgramCalculus.AdelicOpsInstances.skyLanguage fuel)
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:21:0: HeytingLean.ProgramCalculus.futamura_preserves_reconstruction {language : HeytingLean.ProgramCalculus.Language}
+  {split : HeytingLean.ProgramCalculus.SplitInput language.Input} (mix : HeytingLean.ProgramCalculus.Mix language split)
+  (model : HeytingLean.ProgramCalculus.InterpModel language split) (code : split.Static) (input : split.Dynamic) :
+  mix.evalResidual (HeytingLean.ProgramCalculus.compile mix model code) input = model.codeSem code input
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:22:0: HeytingLean.Tropical.relu_is_tropical (x : ℝ) :
+  HeytingLean.Tropical.relu x =
+    (HeytingLean.Tropical.TropicalReal.finite 0 + HeytingLean.Tropical.TropicalReal.finite x).toReal
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:23:0: HeytingLean.ActiveInference.freeEnergy_bounds_surprise.{u_1, u_2} {O : Type u_1} {S : Type u_2} [Fintype S]
+  (gen : HeytingLean.ActiveInference.GenerativeModel O S) (rec : HeytingLean.ActiveInference.RecognitionModel O S)
+  (o : O) : HeytingLean.ActiveInference.freeEnergy gen rec o ≥ HeytingLean.ActiveInference.surprise gen o
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:24:0: HeytingLean.LoF.Combinators.Topos.sheaf_diffusion_converges.{u_1, u_2, u_3} {V : Type u_1} {E : Type u_2} [Fintype V]
+  [Fintype E] (sheaf : HeytingLean.LoF.Combinators.Topos.CellularSheaf V E) (initial : (v : V) → sheaf.stalk v)
+  (time : ℝ) :
+  HeytingLean.LoF.Combinators.Topos.sheafDiffusion sheaf initial time =
+    HeytingLean.LoF.Combinators.Topos.sheafDiffusion sheaf initial time
+✔ [3935/3938] Built HeytingLean.Tests.Integration.OrganicAlignmentStack:c.o (114ms)
+✔ [3936/3938] Built HeytingLean.CLI.OrganicAlignmentStackTestMain (3.3s)
+✔ [3937/3938] Built HeytingLean.CLI.OrganicAlignmentStackTestMain:c.o (162ms)
+✔ [3938/3938] Built organic_alignment_stack_test:exe (1.4s)
+Build completed successfully (3938 jobs).
+
+[run] tropical_relu_demo
+{"note":"tropical_relu_demo: representation scaffold only","ok":true,"terms":2}
+[run] free_energy_demo
+{"note":"free_energy_demo: objective scaffold only","ok":true}
+[run] rg_flow_demo
+{"finalResolution":0,"initialResolution":3,"ok":true}
+[run] sheaf_diffusion_demo
+{"note":"sheaf_diffusion_demo: diffusion is currently constant-in-time","ok":true}
+[run] adelic_futamura_demo
+{"depthA":{"clifford":1,"graph":1,"omega":1,"region":1},"depthAB":{"clifford":2,"graph":2,"omega":2,"region":2},"depthB":{"clifford":1,"graph":1,"omega":1,"region":1},"ok":true}
+[run] organic_alignment_stack_test
+ℹ [1974/1977] Replayed HeytingLean.Tests.Integration.OrganicAlignmentStack
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:18:0: HeytingLean.LoF.Combinators.Differential.S_derivative_correct.{u_1} {K : Type u_1} [CommSemiring K]
+  (x y z dx dy dz : HeytingLean.LoF.Combinators.Differential.FormalSum K) :
+  have base := HeytingLean.LoF.Combinators.Differential.S_denote x y z;
+  have tangent := (HeytingLean.LoF.Combinators.Differential.S_derivative x y z) (dx, dy, dz);
+  HeytingLean.LoF.Combinators.Differential.dualApp
+      (HeytingLean.LoF.Combinators.Differential.dualApp { base := x, tangent := dx } { base := z, tangent := dz })
+      (HeytingLean.LoF.Combinators.Differential.dualApp { base := y, tangent := dy } { base := z, tangent := dz }) =
+    { base := base, tangent := tangent }
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:19:0: HeytingLean.LoF.Combinators.Differential.dualApp_chainRule_consistent.{u_1} {K : Type u_1} [CommSemiring K]
+  (f g x dx : HeytingLean.LoF.Combinators.Differential.FormalSum K) :
+  (HeytingLean.LoF.Combinators.Differential.dualApp (HeytingLean.LoF.Combinators.Differential.Dual.pure f)
+        (HeytingLean.LoF.Combinators.Differential.dualApp (HeytingLean.LoF.Combinators.Differential.Dual.pure g)
+          { base := x, tangent := dx })).tangent =
+    (HeytingLean.LoF.Combinators.Differential.derivativeApp2 f ∘ₗ
+        HeytingLean.LoF.Combinators.Differential.derivativeApp2 g)
+      dx
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:20:0: HeytingLean.ProgramCalculus.AdelicOpsInstances.skyAdelicProgramOps (fuel : ℕ := 100) :
+  HeytingLean.ProgramCalculus.AdelicProgramOps (HeytingLean.ProgramCalculus.AdelicOpsInstances.skyLanguage fuel)
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:21:0: HeytingLean.ProgramCalculus.futamura_preserves_reconstruction {language : HeytingLean.ProgramCalculus.Language}
+  {split : HeytingLean.ProgramCalculus.SplitInput language.Input} (mix : HeytingLean.ProgramCalculus.Mix language split)
+  (model : HeytingLean.ProgramCalculus.InterpModel language split) (code : split.Static) (input : split.Dynamic) :
+  mix.evalResidual (HeytingLean.ProgramCalculus.compile mix model code) input = model.codeSem code input
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:22:0: HeytingLean.Tropical.relu_is_tropical (x : ℝ) :
+  HeytingLean.Tropical.relu x =
+    (HeytingLean.Tropical.TropicalReal.finite 0 + HeytingLean.Tropical.TropicalReal.finite x).toReal
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:23:0: HeytingLean.ActiveInference.freeEnergy_bounds_surprise.{u_1, u_2} {O : Type u_1} {S : Type u_2} [Fintype S]
+  (gen : HeytingLean.ActiveInference.GenerativeModel O S) (rec : HeytingLean.ActiveInference.RecognitionModel O S)
+  (o : O) : HeytingLean.ActiveInference.freeEnergy gen rec o ≥ HeytingLean.ActiveInference.surprise gen o
+info: HeytingLean/Tests/Integration/OrganicAlignmentStack.lean:24:0: HeytingLean.LoF.Combinators.Topos.sheaf_diffusion_converges.{u_1, u_2, u_3} {V : Type u_1} {E : Type u_2} [Fintype V]
+  [Fintype E] (sheaf : HeytingLean.LoF.Combinators.Topos.CellularSheaf V E) (initial : (v : V) → sheaf.stalk v)
+  (time : ℝ) :
+  HeytingLean.LoF.Combinators.Topos.sheafDiffusion sheaf initial time =
+    HeytingLean.LoF.Combinators.Topos.sheafDiffusion sheaf initial time
+{"note":"organic_alignment_stack_test: compile-time checks passed","ok":true}
+
+[robustness] minimal environment (PATH="")
+
+[portability] dynamic deps (best effort)
+	linux-vdso.so.1 (0x00007fff25b6a000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007c1984a00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007c198ec16000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007c198ebfd000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007c198ebf8000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007c198ebf3000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007c198eb0c000)
+	linux-vdso.so.1 (0x00007ffd50359000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x000077d4abe00000)
+	/lib64/ld-linux-x86-64.so.2 (0x000077d4b7130000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x000077d4b7117000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x000077d4b7112000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x000077d4b710d000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x000077d4b7026000)
+	linux-vdso.so.1 (0x00007ffc757e9000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007142fe800000)
+	/lib64/ld-linux-x86-64.so.2 (0x0000714309302000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007143092e9000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007143092e4000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007143092df000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007143091f8000)
+	linux-vdso.so.1 (0x00007ffc1d9ad000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f48b9e00000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f48c42f1000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f48c42d8000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007f48c42d3000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f48c42ce000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f48ba119000)
+	linux-vdso.so.1 (0x00007ffd791f9000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x0000739b9f200000)
+	/lib64/ld-linux-x86-64.so.2 (0x0000739ba922b000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x0000739ba9212000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x0000739ba920d000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x0000739ba9208000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x0000739b9f519000)
+	linux-vdso.so.1 (0x00007ffff1712000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007b4485000000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007b4490530000)
+	libpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007b4490517000)
+	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007b4490512000)
+	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007b449050d000)
+	libm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007b4490426000)
+[hashes] sha256 over bundle (excluding .lake/, build/, vendor/)
+[verify_futamura_adelic] OK
