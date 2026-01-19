@@ -212,8 +212,5 @@ lake exe organic_alignment_stack_test
 
 ## License
 
-MIT License - See [LICENSE](LICENSE)
-
----
-
-<sub>Part of the [HeytingLean](https://github.com/Abraxas1010/heyting) formalization project | [apoth3osis.io](https://apoth3osis.io)</sub>
+This project is provided under the Apoth3osis License Stack v1.
+See `LICENSE.md` and the files under `licenses/`.
